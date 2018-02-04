@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+!/usr/bin/env bash
 #
 # $Id$
 #
@@ -102,8 +102,8 @@ if [ -x "/usr/bin/perl5.8.8" ]; then
     PERL_58=/usr/bin/perl5.8.8
 elif [ -x "/usr/local/bin/perl5.8.8" ]; then
     PERL_58=/usr/local/bin/perl5.8.8
-elif [ -x "$HOME/perl5/perlbrew/perls/perl-5.8.9/bin/perl5.8.9" ]; then
-    PERL_58=$HOME/perl5/perlbrew/perls/perl-5.8.9/bin/perl5.8.9
+#elif [ -x "$HOME/perl5/perlbrew/perls/perl-5.8.9/bin/perl5.8.9" ]; then
+#    PERL_58=$HOME/perl5/perlbrew/perls/perl-5.8.9/bin/perl5.8.9
 elif [ -x "/usr/local/bin/perl5.8.9" ]; then # FreeBSD 7.2
     PERL_58=/usr/local/bin/perl5.8.9
 fi
@@ -143,8 +143,8 @@ elif [ -x "/usr/local/bin/perl5.12.4" ]; then
     PERL_512=/usr/local/bin/perl5.12.4
 elif [ -x "/usr/local/bin/perl5.12.4" ]; then # Also FreeBSD 8.2
     PERL_512=/usr/local/bin/perl5.12.4
-elif [ -x "$HOME/perl5/perlbrew/perls/perl-5.12.4/bin/perl5.12.4" ]; then
-    PERL_512=$HOME/perl5/perlbrew/perls/perl-5.12.4/bin/perl5.12.4
+#elif [ -x "$HOME/perl5/perlbrew/perls/perl-5.12.4/bin/perl5.12.4" ]; then
+#    PERL_512=$HOME/perl5/perlbrew/perls/perl-5.12.4/bin/perl5.12.4
 elif [ -x "/usr/bin/perl5.12" ]; then
     # OSX Lion uses this path
     PERL_512=/usr/bin/perl5.12
@@ -159,9 +159,9 @@ if [ $PERL_512 ]; then
 fi
 
 # Path to Perl 5.14.1
-if [ -x "$HOME/perl5/perlbrew/perls/perl-5.14.1/bin/perl5.14.1" ]; then
-    PERL_514=$HOME/perl5/perlbrew/perls/perl-5.14.1/bin/perl5.14.1
-fi
+#if [ -x "$HOME/perl5/perlbrew/perls/perl-5.14.1/bin/perl5.14.1" ]; then
+#    PERL_514=$HOME/perl5/perlbrew/perls/perl-5.14.1/bin/perl5.14.1
+#fi
 
 if [ $PERL_514 ]; then
     echo "Building with Perl 5.14 at $PERL_514"
@@ -191,6 +191,8 @@ fi
 # Path to Perl 5.18
 if [ -x "/usr/bin/perl5.18" ]; then
     PERL_518=/usr/bin/perl5.18
+elif [ -x "/usr/bin/perl5.18.2" ]; then
+    PERL_518=/usr/bin/perl5.18.2
 fi
 
 # defined on the command line - no detection yet
@@ -237,6 +239,9 @@ if [ "$PERL_BIN" = "" ]; then
         ;;
     "5.20")
         PERL_520=$PERL_BIN
+        ;;
+    "5.22")
+        PERL_522=$PERL_BIN
         ;;
     *)
         echo "Failed to find supported Perl version for '$PERL_BIN'"
@@ -385,7 +390,7 @@ function build {
             ;;
         
         Class::XSAccessor)
-            if [ "$PERL_516" -o "$PERL_518" -o "$PERL_520" ]; then
+            if [ "$PERL_516" -o "$PERL_518" -o "$PERL_520" -o "$PERL_522" ]; then
                 build_module Class-XSAccessor-1.18
             else
                 build_module Class-XSAccessor-1.05
@@ -399,7 +404,7 @@ function build {
             ;;
         
         DBI)
-            if [ "$PERL_518" -o "$PERL_520" ]; then
+            if [ "$PERL_518" -o "$PERL_520" -o "$PERL_522" ]; then
                 build_module DBI-1.628
             else
                 build_module DBI-1.616
@@ -408,7 +413,7 @@ function build {
         
         DBD::SQLite)
             RUN_TESTS=0
-            if [ "$PERL_518" -o "$PERL_520" ]; then
+            if [ "$PERL_518" -o "$PERL_520" -o "$PERL_522" ]; then
                 build_module DBI-1.628
             else
                 build_module DBI-1.616
@@ -493,7 +498,7 @@ function build {
                 rm -rf DBD-SQLite-1.34_01
             else
                 cd ..
-                if [ "$PERL_516" -o "$PERL_518" -o "$PERL_520" ]; then
+                if [ "$PERL_516" -o "$PERL_518" -o "$PERL_520" -o "$PERL_522" ]; then
                    RUN_TESTS=0
                 fi
                 build_module DBD-SQLite-1.34_01
@@ -584,7 +589,7 @@ function build {
         JSON::XS)
             build_module common-sense-2.0
             
-            if [ "$PERL_518" -o "$PERL_520" ]; then
+            if [ "$PERL_518" -o "$PERL_520" -o "$PERL_522" ]; then
                 build_module JSON-XS-2.34
             else
                 build_module JSON-XS-2.3
@@ -615,7 +620,7 @@ function build {
             ;;
         
         YAML::LibYAML)
-            if [ "$PERL_516" -o "$PERL_518" -o "$PERL_520" ]; then
+            if [ "$PERL_516" -o "$PERL_518" -o "$PERL_520" -o "$PERL_522" ]; then
                 RUN_TESTS=0
             fi
             build_module YAML-LibYAML-0.35
@@ -1266,7 +1271,7 @@ find $BUILD -name '*.packlist' -exec rm -f {} \;
 
 # create our directory structure
 # rsync is used to avoid copying non-binary modules or other extra stuff
-if [ "$PERL_512" -o "$PERL_514" -o "$PERL_516" -o "$PERL_518" -o "$PERL_520" ]; then
+if [ "$PERL_512" -o "$PERL_514" -o "$PERL_516" -o "$PERL_518" -o "$PERL_520" -o "$PERL_522" ]; then
     # Check for Perl using use64bitint and add -64int
     ARCH=`$PERL_BIN -MConfig -le 'print $Config{archname}' | sed 's/gnu-//' | sed 's/^i[3456]86-/i386-/' | sed 's/armv5tejl/arm/' `
 fi
